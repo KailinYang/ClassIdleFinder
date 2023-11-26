@@ -130,12 +130,12 @@ def query(db, x, y, z=0):
                 for week in weeks.split(','):
                     if "双" in week:
                         week = week.replace("双", "")
-                        if z in [int(i) for i in range(int(week.split('-')[0]), int(week.split('-')[1]), 2)]:
+                        if z in [int(i) for i in range(int(week.split('-')[0]), int(week.split('-')[1]) + 1, 2)]:
                             free_time = False
                         continue
                     if "单" in week:
                         week = week.replace("单", "")
-                        if z in [int(i) for i in range(int(week.split('-')[0]), int(week.split('-')[1]), 2)]:
+                        if z in [int(i) for i in range(int(week.split('-')[0]), int(week.split('-')[1]) + 1, 2)]:
                             free_time = False
                         continue
                     if "节" in week:
