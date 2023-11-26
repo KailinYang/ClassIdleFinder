@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空闲班级查询</title>
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <h1>
+            电子信息工程学院<br />
+            空闲班级查询v1.2
+        </h1>
+        <form method="POST">
+            <div
+                style="display: flex; flex-direction: column; flex-wrap: wrap; align-content: space-around; justify-content: space-between; width: 300px; height: 200px;">
+
+                <label for="option3">周次:</label>
+                <select name="option3" id="option3" value={{option3}} style="width: 200px;">
+                    {% for item in weekOptions %}
+                    <option value={{ item[0] }} {% if option3==item[0] %}selected{% endif %}>{{ item[1] }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="option1">星期:</label>
+                <select name="option1" id="option1" value={{option1}} style="width: 200px;">
+                    {% for item in dayOptions %}
+                    <option value={{ item }} {% if option1==item %}selected{% endif %}>{{ item }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="option2">节次:</label>
+                <select name="option2" id="option2" value={{option2}} style="width: 200px;">
+                    {% for item in timeOptions %}
+                    <option value={{ item[0] }} {% if option2==item[0] %}selected{% endif %}>{{ item[1] }}</option>
+                    {% endfor %}
+                </select>
+
+                <input type="submit" value="查询">
+            </div>
+        </form>
+
+        {% if option1 and option2 %}
+        <div style="padding-left: 30px;">
+            <!-- <p>周次: {{ option3 }}</p> -->
+            {% for item in weekOptions %}
+                {% if item[0] == option3 %}
+                    <p>周次: {{ item[1] }}</p>
+                {% endif %}
+            {% endfor %}
+            <!-- <p>星期: {{ option1 }}</p> -->
+            {% for item in dayOptions %}
+                {% if item == option1 %}
+                    <p>星期: {{ item }}</p>
+                {% endif %}
+            {% endfor %}
+            <!-- <p>节次: {{ option2 }}</p> -->
+            {% for item in timeOptions %}
+                {% if item[0] == option2 %}
+                    <p>节次: {{ item[1] }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- 使用for循环迭代data列表 -->
+            <ul>
+                {% for item in data %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <p>问题反馈WeChat: Hash773</p>
+    </div>
+</body>
+
+</html>
