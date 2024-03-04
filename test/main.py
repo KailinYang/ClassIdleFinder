@@ -2,47 +2,46 @@ import pandas as pd
 import os
 import re
 
+print("当前工作目录:", os.getcwd())
 
 def read_file_meta(file_name: str = '课表.xls'):
     # 读取Excel文件
     file_path = file_name
     df = pd.read_excel(file_path, header=None)
 
-    # 获取第二行数据
-    second_row = df.iloc[1]
+    # 获取第一行数据
+    first_row = df.iloc[0]
 
     # 将 NaN 值替换为空字符串
-    second_row = second_row.fillna('')
+    first_row = first_row.fillna('')
 
 
-    # 将第二行数据连接成一个字符串
-    second_row_str = ' '.join(map(str, second_row.values))
+    # 将第一行数据连接成一个字符串并打印
+    first_row_str = ' '.join(map(str, first_row.values))
+    print("第一行数据字符串:", first_row_str)
 
     # 使用正则表达式解析所需信息
-    grade = re.search(r'年级：(\d+)', second_row_str).group(1)
-    num_students = re.search(r'人数：(\d+)', second_row_str).group(1)
-    semester = re.search(r'(\d{4}-\d{4}学年第\d学期)', second_row_str).group(1)
-    class_name = re.search(r'班级名称：(.+)', second_row_str).group(1)
+    semester = re.search(r'(\d{4}-\d{4}年第\d学期)', first_row_str).group(1)
+    grade = re.search(r'.*年第\d学期\s+(\d{2})', first_row_str).group(1)
+    class_name = re.search(r'(.+?)课表', first_row_str).group(1)
 
     # 打印提取的信息
-    print("年级:", grade)
-    print("人数:", num_students)
     print("学期:", semester)
+    print("年级:", grade)
     print("班级名称:", class_name.strip())
     return {
-        'grade': grade,
-        'num_students': num_students,
         'semester': semester,
+        'grade': grade,
         'class_name': class_name.strip()
     }
 
 def read_file_table(file_name: str = '课表.xls'):
     # 读取Excel文件
-    sheet_name = 'Sheet1'  # 根据实际情况修改表名
+    sheet_name = 'Sheet0'
 
-    # 跳过前两行，从第3行开始读取，并设置header=None，因为表头不规范
-    # df = pd.read_excel(file_name, sheet_name=sheet_name, header=None, skiprows=2, engine='openpyxl')
-    df = pd.read_excel(file_name, sheet_name=sheet_name, header=None, skiprows=2, engine='xlrd')
+    # 跳过第一行，从第二行开始读取，并设置header=None，因为表头不规范
+    # df = pd.read_excel(file_name, sheet_name=sheet_name, header=None, skiprows=1, engine='openpyxl')
+    df = pd.read_excel(file_name, sheet_name=sheet_name, header=None, skiprows=1, engine='xlrd')
 
     # 重置列名
     df.columns = ['时间', '节次', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
@@ -60,11 +59,7 @@ def read_file_table(file_name: str = '课表.xls'):
     df.set_index('节次', inplace=True)
     return df
 
-    # print(df)
-    # print(df.loc['第一二节', '星期一'])
-
-
-def read_file_list(directory: str = '2023级新生课表'):
+def read_file_list(directory: str = '班级课表'):
 
     # 使用 os.listdir() 列出目录中的所有文件和文件夹
     all_items = os.listdir(directory)
@@ -78,7 +73,7 @@ def read_file_list(directory: str = '2023级新生课表'):
     return files
 
 def get_db():
-    directory = '2023级新生课表'
+    directory = '班级课表'
     files = read_file_list(directory)
     db = []
     for file in files:
@@ -102,9 +97,7 @@ def query(db, x, y, z=0):
             free_time = True
 
             # 定义正则表达式
-            pattern = r'([^☆]+)◇([^◇]+)(?:◇([^◇]*))?(?:◇([^◇]*))?(?:◇(\d+-\d+))?'
-            pattern = r'([^☆]+)◇([^◇]+)◇([^◇]+)◇([^◇]+)◇(\d+-\d+)'
-            pattern = r'([^◇☆]+)◇([^◇☆]+)(?:◇([^◇☆]+))?(?:◇([^◇☆]+))?(?:◇([^◇☆]+))?(?:☆|$)'
+            pattern = r'(.+?)\/\((\d+-\d+节)\)(\d+-\d+周)\/(.+?)\/(.+)'
 
             # for ct in text.split('☆'):
             # 使用正则表达式查找所有匹配项
